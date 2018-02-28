@@ -23,8 +23,8 @@ public class EnumConstantsUtil {
 
             for (int i = 0; i < constants.length; i++) {
 
-                if(constants[i].getClass().isEnum() && ((EnumDataModel)constants[i]).getCode()==code){
-                    return ((EnumDataModel)constants[i]).getMessage();
+                if(constants[i].getClass().isEnum() && constants[i].getCode()==code){
+                    return constants[i].getMessage();
                 }
             }
         }
