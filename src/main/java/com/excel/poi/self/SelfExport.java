@@ -1,9 +1,13 @@
-package com.excel.poi.self.export;
+package com.excel.poi.self;
 
-import com.excel.poi.enums.EnumDataModel;
+import com.excel.poi.enums.EnumDataStatusModel;
 import com.excel.poi.utils.EnumConstantsUtil;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.excel.poi.utils.GetGenernalFieldValueByFields.invoke;
+import static com.excel.poi.utils.GenernalFieldValueByFields.getFieldValue;
+
 
 /**
  * 自定义导出
@@ -38,9 +43,9 @@ public class SelfExport {
      * @param modelEnumClass  必须实现接口EnumDataModel的枚举类(枚举类中有对应的属性)
      * @param <T>
      */
-    public static <T> void export(List<T> sourceList, String[] fields, HttpServletResponse response, String sheetName, Class<? extends EnumDataModel> modelEnumClass){
+    public static <T> void export(List<T> sourceList, String[] fields, HttpServletResponse response, String sheetName, Class<? extends EnumDataStatusModel> modelEnumClass){
 
-       /* try{
+        try{
             if(fields!=null){
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet(sheetName);
@@ -51,32 +56,19 @@ public class SelfExport {
                     row.createCell(i).setCellValue(fields[i]);
                 }
 
-                //处理日期格式
-                XSSFDataFormat format = workbook.createDataFormat();
-                short s = format.getFormat("yyyy年MM月dd日 HH时mm分ss秒");
-                XSSFCellStyle style = workbook.createCellStyle();
-                XSSFFont font = workbook.createFont();
-                font.setFontName("华文楷体");
-                font.setItalic(true);
-                font.setBold(true);
-                font.setColor(HSSFFont.COLOR_RED);
-                style.setFont(font);
-                style.setDataFormat(s);
-
                 //处理数据行
                 for (int i = 0; i < sourceList.size(); i++) {
                     T t = sourceList.get(i);
                     row = sheet.createRow(i+1);
                     for (int j = 0; j < fields.length; j++) {
 
-                        Object obj = invoke(map.get(fields[j]), t);
+                        Object obj = getFieldValue(map.get(fields[j]), t);
 
                         //对日期类型进行筛选。做日期类型的处理
                         if(obj instanceof Date){
-                            sheet.setColumnWidth(j, 10000);
-                            XSSFCell cell = row.createCell(j);
-                            cell.setCellStyle(style);
-                            cell.setCellValue((Date)obj);
+
+                            setCellDateValue(workbook,(Date)obj,j,row);
+
                         }else{
                             XSSFCell cell = row.createCell(j);
                             if(obj == null){
@@ -105,10 +97,32 @@ public class SelfExport {
             }
         }catch(Exception e){
             e.printStackTrace();
-        }*/
-
-        String str_status = EnumConstantsUtil.valueBy(modelEnumClass, 1);
-
-        System.out.println(str_status);
+        }
     }
+
+    /**
+     * 设置日期格式的单元数据
+     * @param workbook
+     * @param date
+     * @param index
+     * @param row
+     */
+    private static void setCellDateValue(Workbook workbook, Date date, Integer index, Row row){
+
+        //处理日期格式
+        DataFormat format = workbook.createDataFormat();
+        short s = format.getFormat("yyyy年MM月dd日 HH时mm分ss秒");
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontName("华文楷体");
+        font.setItalic(true);
+        font.setColor(HSSFFont.COLOR_RED);
+        style.setFont(font);
+        style.setDataFormat(s);
+
+        Cell cell = row.createCell(index);
+        cell.setCellStyle(style);
+        cell.setCellValue(date);
+    }
+
 }

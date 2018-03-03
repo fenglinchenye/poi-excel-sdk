@@ -1,6 +1,6 @@
 package com.excel.poi.utils;
 
-import com.excel.poi.enums.EnumDataModel;
+import com.excel.poi.enums.EnumDataStatusModel;
 
 /**
  * 根据enum的键获取其值
@@ -15,7 +15,7 @@ public class EnumConstantsUtil {
      * @param <T>
      * @return
      */
-    public static <T extends EnumDataModel> String valueBy(Class<T> sourceEnumClass,int code){
+    public static <T extends EnumDataStatusModel> String valueBy(Class<T> sourceEnumClass,int code){
 
         T[] constants = sourceEnumClass.getEnumConstants();
 
