@@ -2,12 +2,15 @@ package com.excel.poi.utils;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -15,7 +18,9 @@ import java.util.*;
  * 属性名形如 ：patient.name 等 多级属性用点分割
  *
  */
-public class GenernalFieldValueByFields {
+public class GeneralFieldValueByFields {
+
+    private static final Logger log = Logger.getLogger(GeneralFieldValueByFields.class);
 
     /**
      * 获得属性值
@@ -68,7 +73,6 @@ public class GenernalFieldValueByFields {
      */
     public static <T> T createObjectByFields(Class<T> sourceClazz, List<String> fieldNames,List<String> fieldValues) throws IllegalAccessException, InstantiationException {
 
-
         T bean = sourceClazz.newInstance();
 
         // 取出bean里的所有方法
@@ -97,32 +101,33 @@ public class GenernalFieldValueByFields {
 
     /**
      * 格式化string为Date
-     * @param datestr
+     * @param dateStr
      * @return date
      */
-    private static Date parseDate(String datestr) {
-        if (null == datestr || "".equals(datestr)) {
+    private static Date parseDate(String dateStr) {
+        if (null == dateStr || "".equals(dateStr)) {
             return null;
         }
         try {
-            String fmtstr = null;
-            if (datestr.indexOf(':') > 0) {
-                fmtstr = "yyyy-MM-dd HH:mm:ss";
+            String formatStr = null;
+            if (dateStr.indexOf(':') > 0) {
+                formatStr = "yyyy-MM-dd HH:mm:ss";
             } else {
-                fmtstr = "yyyy-MM-dd";
+                formatStr = "yyyy-MM-dd";
             }
-            SimpleDateFormat sdf = new SimpleDateFormat(fmtstr, Locale.UK);
-            return sdf.parse(datestr);
+            SimpleDateFormat sdf = new SimpleDateFormat(formatStr, Locale.UK);
+            return sdf.parse(dateStr);
         } catch (Exception e) {
             return null;
         }
     }
+
     /**
      * 日期转化为String
      * @param date
      * @return date string
      */
-    private static String fmtDate(Date date) {
+    private static String formatDate(Date date) {
         if (null == date) {
             return null;
         }
@@ -148,6 +153,7 @@ public class GenernalFieldValueByFields {
         }
         return false;
     }
+
     /**
      * 判断是否存在某属性的 get方法
      * @param methods
@@ -169,7 +175,7 @@ public class GenernalFieldValueByFields {
      * @return String
      */
     private static String parGetName(String fieldName) {
-        if (null == fieldName || "".equals(fieldName)) {
+        if (StringUtils.isBlank(fieldName)) {
             return null;
         }
 
@@ -284,7 +290,7 @@ public class GenernalFieldValueByFields {
                 Boolean temp = Boolean.parseBoolean(value);
                 fieldSetMet.invoke(t, temp);
             } else {
-                System.out.println("not supper type" + fileTypeName);
+                log.info("not supper type" + fileTypeName);
             }
         }
     }

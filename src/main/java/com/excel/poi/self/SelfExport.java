@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.excel.poi.utils.GenernalFieldValueByFields.getFieldValue;
+import static com.excel.poi.utils.GeneralFieldValueByFields.getFieldValue;
 
 
 /**

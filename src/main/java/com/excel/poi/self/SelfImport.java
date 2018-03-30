@@ -1,6 +1,6 @@
 package com.excel.poi.self;
 
-import com.excel.poi.utils.GenernalFieldValueByFields;
+import com.excel.poi.utils.GeneralFieldValueByFields;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -65,7 +65,7 @@ public class SelfImport {
                 valueList.add(this.getCellValue(cell).toString());
             }
 
-            T target = GenernalFieldValueByFields.createObjectByFields(targetClazz, columnNameList, valueList);
+            T target = GeneralFieldValueByFields.createObjectByFields(targetClazz, columnNameList, valueList);
 
             targetList.add(target);
 
