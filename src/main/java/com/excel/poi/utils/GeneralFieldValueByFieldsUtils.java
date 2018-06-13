@@ -1,8 +1,8 @@
 package com.excel.poi.utils;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,9 +18,8 @@ import java.util.Locale;
  * 属性名形如 ：patient.name 等 多级属性用点分割
  *
  */
-public class GeneralFieldValueByFields {
-
-    private static final Logger log = Logger.getLogger(GeneralFieldValueByFields.class);
+@Slf4j
+public class GeneralFieldValueByFieldsUtils {
 
     /**
      * 获得属性值
@@ -160,7 +159,7 @@ public class GeneralFieldValueByFields {
      * @param fieldGetMet
      * @return boolean
      */
-    private static boolean checkGetMet(Method[] methods, String fieldGetMet) {
+    private static boolean checkGetMethod(Method[] methods, String fieldGetMet) {
         for (Method met : methods) {
             if (fieldGetMet.equals(met.getName())) {
                 return true;
@@ -270,7 +269,7 @@ public class GeneralFieldValueByFields {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    private static <T>void invokeBaseType(T t,String fileTypeName,Method fieldSetMet,String value) throws InvocationTargetException, IllegalAccessException {
+    private static <T> void invokeBaseType(T t,String fileTypeName,Method fieldSetMet,String value) throws InvocationTargetException, IllegalAccessException {
 
         if (null != value && !"".equals(value)) {
             if ("String".equals(fileTypeName)) {

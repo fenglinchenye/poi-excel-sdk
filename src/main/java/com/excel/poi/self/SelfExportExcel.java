@@ -1,37 +1,55 @@
 package com.excel.poi.self;
 
 import com.excel.poi.enums.EnumDataStatusModel;
+import com.excel.poi.utils.CellUtils;
 import com.excel.poi.utils.EnumConstantsUtil;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.ss.usermodel.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.excel.poi.utils.GeneralFieldValueByFields.getFieldValue;
+import static com.excel.poi.utils.GeneralFieldValueByFieldsUtils.getFieldValue;
 
 
 /**
- * 自定义导出
+ * 自定义普通导出
+ * 不能进行合并单元格数据
  */
-public class SelfExport {
+@Slf4j
+public class SelfExportExcel<T> {
 
     /**
      * 映射 导出的列名与实体数据中的属性名之间的对应关系
      * k:列名   v: 属性名
      */
-    public static Map<String,String> map;
+    private Map<String,String> map;
 
-    public static Map<String, String> getMap() {
+    public  Map<String, String> getMap() {
         return map;
+    }
+
+    public  void setMap(Map<String, String> map) {
+        this.map = map;
+    }
+
+    public SelfExportExcel() {
+    }
+
+    /**
+     * 构造方法
+     * @param map
+     */
+    public SelfExportExcel(Map<String, String> map) {
+        this.map = map;
     }
 
     /**
@@ -41,10 +59,10 @@ public class SelfExport {
      * @param response 响应流
      * @param sheetName 工作页名
      * @param modelEnumClass  必须实现接口EnumDataModel的枚举类(枚举类中有对应的属性)
-     * @param <T>
      */
-    public static <T> void export(List<T> sourceList, String[] fields, HttpServletResponse response, String sheetName, Class<? extends EnumDataStatusModel> modelEnumClass){
+    public void export(List<T> sourceList, String[] fields, HttpServletResponse response, String sheetName, Class<? extends EnumDataStatusModel> modelEnumClass){
 
+        OutputStream out = null;
         try{
             if(fields!=null){
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -62,13 +80,12 @@ public class SelfExport {
                     row = sheet.createRow(i+1);
                     for (int j = 0; j < fields.length; j++) {
 
+                        // 获取单元格的值
                         Object obj = getFieldValue(map.get(fields[j]), t);
 
                         //对日期类型进行筛选。做日期类型的处理
                         if(obj instanceof Date){
-
-                            setCellDateValue(workbook,(Date)obj,j,row);
-
+                            CellUtils.setCellDateValue(workbook,(Date)obj,j,row);
                         }else{
                             XSSFCell cell = row.createCell(j);
                             if(obj == null){
@@ -91,38 +108,19 @@ public class SelfExport {
                 //设置响应输出
                 response.setContentType("application/vnd.ms-excel");
                 response.setHeader("content-disposition", "attachment;filename="+URLEncoder.encode(sheetName+"记录表.xlsx","utf-8"));
-                ServletOutputStream out = response.getOutputStream();
+                out = response.getOutputStream();
                 workbook.write(out);
-                out.close();
             }
         }catch(Exception e){
-            e.printStackTrace();
+            log.error("【自定义导出excel】导出异常");
+        }finally {
+            if (out!=null){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.error("【自定义导出excel】关闭流异常,exception={}",e);
+                }
+            }
         }
     }
-
-    /**
-     * 设置日期格式的单元数据
-     * @param workbook
-     * @param date
-     * @param index
-     * @param row
-     */
-    private static void setCellDateValue(Workbook workbook, Date date, Integer index, Row row){
-
-        //处理日期格式
-        DataFormat format = workbook.createDataFormat();
-        short s = format.getFormat("yyyy年MM月dd日 HH时mm分ss秒");
-        CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setFontName("华文楷体");
-        font.setItalic(true);
-        font.setColor(HSSFFont.COLOR_RED);
-        style.setFont(font);
-        style.setDataFormat(s);
-
-        Cell cell = row.createCell(index);
-        cell.setCellStyle(style);
-        cell.setCellValue(date);
-    }
-
 }
