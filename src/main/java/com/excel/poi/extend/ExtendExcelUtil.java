@@ -2,6 +2,9 @@ package com.excel.poi.extend;
     
 import com.excel.poi.test.ExportExcelTempModel;
 import com.excel.poi.utils.CellUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.*;
@@ -26,20 +29,18 @@ import static com.excel.poi.utils.GeneralFieldValueByFieldsUtils.getFieldValue;
  * 注意：导出的实体类的数据属性为java.lang.String 或 java.util.Date
  */
 @Slf4j
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ExtendExcelUtil {
-
-
+    
     /**
      * 映射 导出的列名与实体数据中的属性名之间的对应关系
      * k:列名   v: 属性名
      */
-    public static Map<String,String> map;
-
-    public static Map<String, String> getMap() {
-        return map;
-    }
-
-    /**  
+    public Map<String,String> map;
+    
+    /** 数据导出 网络传输流类型
      * @param fileName 文件名称  
      * @param headers 表头  
      * @param dataSet 数据集
@@ -50,7 +51,7 @@ public class ExtendExcelUtil {
      * @param timeCells 时间列 可选
      * @throws IOException  
      */    
-    public static void exportExelMerge(String fileName,final String[] headers,List<String[]> dataSet,boolean isSortDataSet,HttpServletResponse response, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells) throws IOException{
+    public  <T>void exportExelMerge(String fileName,final String[] headers,List<T> dataSet,boolean isSortDataSet,HttpServletResponse response, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells) throws IOException{
         String title = "Sheet1";    
         response.setContentType("application/vnd.ms-excel;charset=utf-8");     
         response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
@@ -59,7 +60,7 @@ public class ExtendExcelUtil {
         response.flushBuffer();    
     }    
         
-    /**  
+    /**  固定路径流传输导出数据
      * @param title 文件名称  
      * @param headers 表头  
      * @param dataSet 数据集
@@ -70,7 +71,7 @@ public class ExtendExcelUtil {
      * @param sumCells 要求和的列  
      * @param timeCells 时间列 可选  
      */    
-    public static <T>void createExcelMerge(String title, final String[] headers,List<T> dataSet,boolean isSortDataSet, OutputStream out, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells){
+    public  <T>void createExcelMerge(String title, final String[] headers,List<T> dataSet,boolean isSortDataSet, OutputStream out, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells){
 
         log.debug("【创建合并单元格】开始创建！");
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -192,7 +193,7 @@ public class ExtendExcelUtil {
      * @param sumRowStyle  
      * @param numStyle  
      */    
-    private static void createSumRow(HSSFSheet sheet , HSSFRow row , final String[] headers, final Integer[] sumCells , HSSFCellStyle sumRowStyle,HSSFCellStyle numStyle){    
+    private  void createSumRow(HSSFSheet sheet , HSSFRow row , final String[] headers, final Integer[] sumCells , HSSFCellStyle sumRowStyle,HSSFCellStyle numStyle){    
         row=sheet.createRow(sheet.getLastRowNum()+1);    
         for (int i = 0; i < headers.length; i++) {    
             HSSFCell cell = row.createCell(i);    
@@ -222,7 +223,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @param mergeBasis  
      */    
-    private static void mergedRegion(HSSFSheet sheet, int cellLine,int startRow, int endRow, HSSFWorkbook workbook, Integer[] mergeBasis) {
+    private  void mergedRegion(HSSFSheet sheet, int cellLine,int startRow, int endRow, HSSFWorkbook workbook, Integer[] mergeBasis) {
         // 样式对象
         HSSFCellStyle style = workbook.createCellStyle();
         // 垂直
@@ -280,7 +281,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @return  
      */    
-    private static HSSFCellStyle createHeadStyle(HSSFWorkbook workbook){    
+    private  HSSFCellStyle createHeadStyle(HSSFWorkbook workbook){    
         //标题单元格样式    
         HSSFCellStyle headStyle = workbook.createCellStyle();       
         headStyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);      
@@ -305,7 +306,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @return  
      */    
-    private static HSSFCellStyle createSumRowStyle(HSSFWorkbook workbook){    
+    private  HSSFCellStyle createSumRowStyle(HSSFWorkbook workbook){    
         //合计行单元格样式    
         HSSFCellStyle sumRowStyle = workbook.createCellStyle();      
         sumRowStyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);      
@@ -331,7 +332,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @return  
      */    
-    private static HSSFCellStyle createCommonDataStyle(HSSFWorkbook workbook){    
+    private  HSSFCellStyle createCommonDataStyle(HSSFWorkbook workbook){    
         //普通数据单元格样式     
         HSSFCellStyle commonDataStyle = workbook.createCellStyle();      
         commonDataStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);      
@@ -355,7 +356,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @return  
      */    
-    private static HSSFCellStyle createNumStyle(HSSFWorkbook workbook){    
+    private  HSSFCellStyle createNumStyle(HSSFWorkbook workbook){    
         //自定义保留两位小数数字单元格格式    
         HSSFCellStyle numStyle = workbook.createCellStyle();      
         numStyle.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);      
@@ -376,7 +377,7 @@ public class ExtendExcelUtil {
     }
 
 
-    public static void main(String[] args) {     
+    public  void main(String[] args) {     
         String[] headers =  { "大区", "部门", "金额", "数量", "日期" };
 
         Map<String, String> map = new HashMap<String,String>();
@@ -385,8 +386,6 @@ public class ExtendExcelUtil {
         map.put("金额","money");
         map.put("数量","number");
         map.put("日期","time");
-
-        ExtendExcelUtil.map=map;
 
         List<ExportExcelTempModel> dataset = new ArrayList<ExportExcelTempModel>();
 
@@ -409,7 +408,8 @@ public class ExtendExcelUtil {
 
         try {
             OutputStream out = new FileOutputStream("D://a.xls");
-            ExtendExcelUtil.createExcelMerge("测试.xls", headers, dataset, true, out, new Integer[]{0,1}, new Integer[]{0,1}, new Integer[]{2,3}, new Integer[]{4});
+            ExtendExcelUtil extendExcelUtil = new ExtendExcelUtil(map);
+            extendExcelUtil.createExcelMerge("测试.xls", headers, dataset, true, out, new Integer[]{0,1}, new Integer[]{0,1}, new Integer[]{2,3}, new Integer[]{4});
             out.close();
             JOptionPane.showMessageDialog(null, "导出成功!");
             System.out.println("excel导出成功！");

@@ -24,8 +24,14 @@ import java.util.List;
 @Slf4j
 public class SelfImportExcel<T> {
 
-    private final static String excel2003L =".xls";    //2003- 版本的excel
-    private final static String excel2007U =".xlsx";   //2007+ 版本的excel
+    /**
+     * 2003- 版本的excel
+     */
+    private final static String excel2003L =".xls";
+    /**
+     * 2007+ 版本的excel
+     */
+    private final static String excel2007U =".xlsx";
 
     private List<String> columnNameList;
 

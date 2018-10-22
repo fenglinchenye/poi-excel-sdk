@@ -1,6 +1,7 @@
 package com.excel.poi.utils;
 
 
+import com.excel.poi.enums.FieldType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- *
+ * @author zx
  * 根据属性名获得属性值
  * 属性名形如 ：patient.name 等 多级属性用点分割
  *
@@ -58,8 +59,9 @@ public class GeneralFieldValueByFieldsUtils {
                 }
                 return child;
             }
+        } else {
+            return null;
         }
-        else return null;
     }
 
 
@@ -272,20 +274,20 @@ public class GeneralFieldValueByFieldsUtils {
     private static <T> void invokeBaseType(T t,String fileTypeName,Method fieldSetMet,String value) throws InvocationTargetException, IllegalAccessException {
 
         if (null != value && !"".equals(value)) {
-            if ("String".equals(fileTypeName)) {
+            if (FieldType.STRING.equals(fileTypeName)) {
                 fieldSetMet.invoke(t, value);
-            } else if ("Date".equals(fileTypeName)) {
+            } else if (FieldType.DATE.equals(fileTypeName)) {
                 Date temp = parseDate(value);
                 fieldSetMet.invoke(t, temp);
-            } else if ("Integer".equals(fileTypeName) || "int".equals(fileTypeName)) {
+            } else if (FieldType.INTEGER.equals(fileTypeName) || FieldType.INT.equals(fileTypeName)) {
                 fieldSetMet.invoke(t, Integer.parseInt(value));
-            } else if ("Long".equalsIgnoreCase(fileTypeName)) {
+            } else if (FieldType.LONG.equalsIgnoreCase(fileTypeName)) {
                 Long temp = Long.parseLong(value);
                 fieldSetMet.invoke(t, temp);
-            } else if ("Double".equalsIgnoreCase(fileTypeName)) {
+            } else if (FieldType.DOUBLE.equalsIgnoreCase(fileTypeName)) {
                 Double temp = Double.parseDouble(value);
                 fieldSetMet.invoke(t, temp);
-            } else if ("Boolean".equalsIgnoreCase(fileTypeName)) {
+            } else if (FieldType.BOOLEAN.equalsIgnoreCase(fileTypeName)) {
                 Boolean temp = Boolean.parseBoolean(value);
                 fieldSetMet.invoke(t, temp);
             } else {
