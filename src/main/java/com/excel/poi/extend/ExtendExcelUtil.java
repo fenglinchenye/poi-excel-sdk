@@ -32,7 +32,7 @@ import static com.excel.poi.utils.GeneralFieldValueByFieldsUtils.getFieldValue;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExtendExcelUtil {
+public class ExtendExcelUtil<T> {
     
     /**
      * 映射 导出的列名与实体数据中的属性名之间的对应关系
@@ -51,7 +51,7 @@ public class ExtendExcelUtil {
      * @param timeCells 时间列 可选
      * @throws IOException  
      */    
-    public  <T>void exportExelMerge(String fileName,final String[] headers,List<T> dataSet,boolean isSortDataSet,HttpServletResponse response, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells) throws IOException{
+    public void exportExelMerge(String fileName,final String[] headers,List<T> dataSet,boolean isSortDataSet,HttpServletResponse response, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells) throws IOException{
         String title = "Sheet1";    
         response.setContentType("application/vnd.ms-excel;charset=utf-8");     
         response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "utf-8"));
@@ -71,7 +71,7 @@ public class ExtendExcelUtil {
      * @param sumCells 要求和的列  
      * @param timeCells 时间列 可选  
      */    
-    public  <T>void createExcelMerge(String title, final String[] headers,List<T> dataSet,boolean isSortDataSet, OutputStream out, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells){
+    public void createExcelMerge(String title, final String[] headers,List<T> dataSet,boolean isSortDataSet, OutputStream out, final Integer[] mergeBasis, final Integer[] mergeCells, final Integer[] sumCells, final Integer[] timeCells){
 
         log.debug("【创建合并单元格】开始创建！");
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -121,7 +121,7 @@ public class ExtendExcelUtil {
                                 s1+= getFieldValue(map.get(headers[mergeBasis[i].intValue()]), o1).toString();
                                 s2+= getFieldValue(map.get(headers[mergeBasis[i].intValue()]), o2).toString();
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                log.error("【创建合并单元格】获取单元格值异常,exception={}",e);
                             }
                         }
                     }    
@@ -223,7 +223,7 @@ public class ExtendExcelUtil {
      * @param workbook  
      * @param mergeBasis  
      */    
-    private  void mergedRegion(HSSFSheet sheet, int cellLine,int startRow, int endRow, HSSFWorkbook workbook, Integer[] mergeBasis) {
+    private void mergedRegion(HSSFSheet sheet, int cellLine,int startRow, int endRow, HSSFWorkbook workbook, Integer[] mergeBasis) {
         // 样式对象
         HSSFCellStyle style = workbook.createCellStyle();
         // 垂直
